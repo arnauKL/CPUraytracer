@@ -11,8 +11,7 @@ int main() {
     sf::ContextSettings settings;
     settings.antialiasingLevel = 8;
 
-    sf::RenderWindow window(sf::VideoMode(conf::W_WIDTH, conf::W_HEIGHT),
-                            "CPU Raytracer", sf::Style::Default, settings);
+    sf::RenderWindow window(sf::VideoMode(conf::W_WIDTH, conf::W_HEIGHT), "CPU Raytracer", sf::Style::Default, settings);
     window.setFramerateLimit(60);
 
     Renderer renderer = Renderer();

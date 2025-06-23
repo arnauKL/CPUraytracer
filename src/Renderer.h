@@ -1,6 +1,5 @@
 #pragma once
 
-#include "Random.h"
 #include "config.hpp"
 #include <SFML/Graphics.hpp>
 #include <SFML/Graphics/Color.hpp>
@@ -20,7 +19,6 @@ class Renderer {
     sf::Image _image;
     sf::Texture _texture;
     sf::Sprite _sprite;
-    Random _rnd = Random(); // Random number generator
 
     sf::Color perPixel(sf::Vector2f);
 };
