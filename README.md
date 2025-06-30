@@ -9,6 +9,8 @@ Basic raytracer, built by following the book [Ray Tracing in One Weekend](https:
 - Runs on the CPU.
 - No external dependencies (yet)
 
+![Result image](image.ppm)
+
 ## Building
 
 Linux + g++:
@@ -26,4 +28,5 @@ Image is output to standard output stream in `ppm` format.
 ```
 
 It can be then viewed using _imv_ or some other image viewer that supports ppm.
+
 
