@@ -1,15 +1,19 @@
-# Raytracer
+# Ray tracer
 
 >Project in development
 
+A basic ray tracer, built by following the book [Ray Tracing in One Weekend](https://raytracing.github.io/books/RayTracingInOneWeekend.html).
 
-A basic raytracer, built by following the book [Ray Tracing in One Weekend](https://raytracing.github.io/books/RayTracingInOneWeekend.html) to learn more about realistic rendering techniques.
 
 - Outputs the image to `stdout`.
 - Runs on the CPU.
 - No external dependencies (yet)
 
 ![Result image](doc/result.png)
+
+## Motivation
+
+The main goal of this project is to learn about realistic rendering techniques.  It doesn't have a GUI or any kind of interactivity, everything is hard-coded for now.
 
 ## Building
 
@@ -24,7 +28,7 @@ make
 
 ## Running
 
-The image is output to standard output stream in `PPM` format.
+The image is output to standard output stream in PPM format.
 
 ```bash
 ./raytracer > result.ppm
