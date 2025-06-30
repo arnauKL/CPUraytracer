@@ -13,11 +13,14 @@ Basic raytracer, built by following the book [Ray Tracing in One Weekend](https:
 
 ## Building
 
-Linux + g++:
+Linux:
 
 ```bash
-g++ src/main.cpp -o raytracer
+git clone https://github.com/arnauKL/CPUraytracer.git
+cd CPUraytracer
+make
 ```
+
 
 ## Running
 
@@ -27,7 +30,7 @@ Image is output to standard output stream in `ppm` format.
 ./raytracer > result.ppm
 ```
 
-It can be then viewed using _imv_ or some other image viewer that supports ppm, or converted to other image formats:
+It can be then viewed using _imv_ or some other image viewer that supports ppm, or converted to other image formats (imagemagik):
 
 ```bash
 magick result.ppm result.png
