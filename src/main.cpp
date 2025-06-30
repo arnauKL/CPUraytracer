@@ -4,7 +4,28 @@
 #include "utils/color.h"
 #include "utils/vec3.h"
 
+bool hit_sphere(const point3 &center, double radius, const Ray &r) {
+    vec3 oc = center - r.origin(); // Dist from the origin of the ray to the center of the sphere
+
+    // These are the components from the quadratic equation at^2 + bt + c = 0
+    // when solving for t
+    auto a = dot(r.direction(), r.direction());
+    auto b = -2.0 * dot(r.direction(), oc);
+    auto c = dot(oc, oc) - radius * radius;
+    // the discriminant is the content of the sqrt: b^2 - 4ac
+    auto discriminant = b * b - 4 * a * c;
+
+    // We know that there has been an intersection with a sphere when the disciminant is grater or eq to 0:
+    //      discriminant == 0: ony 1 root, only 1 hit, tangent to the sphere.
+    //      discrimanant > 0: 2 roots, 2 hits: one when entering the sphere and the other when exiting.
+    return (discriminant >= 0);
+}
+
 color ray_color(const Ray &r) {
+
+    if (hit_sphere(point3(0.0, 0.0, -1.0), 0.5, r)) {
+        return color(1.0, 0.7, 0.0); // If there is a hit, return yellow
+    }
 
     vec3 unit_direction = unit_vector(r.direction()); // scaled to unit length, so -1:1
     auto a = 0.5 * (unit_direction.y() + 1.0);        // Scales from -1:1 to 0:1

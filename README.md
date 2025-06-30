@@ -3,13 +3,13 @@
 >Project in development
 
 
-Basic raytracer, built by following the book [Ray Tracing in One Weekend](https://raytracing.github.io/books/RayTracingInOneWeekend.html) to learn more about realistic rendering techniques.
+A basic raytracer, built by following the book [Ray Tracing in One Weekend](https://raytracing.github.io/books/RayTracingInOneWeekend.html) to learn more about realistic rendering techniques.
 
 - Outputs the image to `stdout`.
 - Runs on the CPU.
 - No external dependencies (yet)
 
-![Result image](result.png)
+![Result image](doc/result.png)
 
 ## Building
 
@@ -24,13 +24,13 @@ make
 
 ## Running
 
-Image is output to standard output stream in `ppm` format.
+The image is output to standard output stream in `PPM` format.
 
 ```bash
 ./raytracer > result.ppm
 ```
 
-It can be then viewed using _imv_ or some other image viewer that supports ppm, or converted to other image formats (imagemagik):
+It can be then viewed using _imv_ or some other image viewer that supports PPM, or converted to other image formats (ImageMagick):
 
 ```bash
 magick result.ppm result.png
