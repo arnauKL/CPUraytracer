@@ -9,7 +9,7 @@ Basic raytracer, built by following the book [Ray Tracing in One Weekend](https:
 - Runs on the CPU.
 - No external dependencies (yet)
 
-![Result image](image.ppm)
+![Result image](result.png)
 
 ## Building
 
@@ -27,6 +27,8 @@ Image is output to standard output stream in `ppm` format.
 ./raytracer > result.ppm
 ```
 
-It can be then viewed using _imv_ or some other image viewer that supports ppm.
+It can be then viewed using _imv_ or some other image viewer that supports ppm, or converted to other image formats:
 
-
+```bash
+magick result.ppm result.png
+```
