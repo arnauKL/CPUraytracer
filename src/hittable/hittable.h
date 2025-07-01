@@ -49,7 +49,7 @@ class hittable {
     // - rec: a reference to a 'hit_record' that will be filled with details if there is a hit
     //
     // Returns true if the ray hit the object in the valid range.
-    virtual bool hit(const Ray &r, double ray_tmin, double ray_tmax, hit_record &rec) const = 0;
+    virtual bool hit(const Ray &r, Interval ray_t, hit_record &rec) const = 0;
 };
 
 #endif

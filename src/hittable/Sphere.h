@@ -8,7 +8,7 @@ class Sphere : public hittable {
   public:
     Sphere(const point3 &center, double radius) : _center(center), _radius(std::fmax(0, radius)) {}
 
-    bool hit(const Ray &r, double ray_tmin, double ray_tmax, hit_record &rec) const override {
+    bool hit(const Ray &r, Interval ray_t, hit_record &rec) const override {
         vec3 oc = _center - r.origin();
         auto a = r.direction().length_squared(); // dot product == len^2
         auto h = dot(r.direction(), oc);         // Tip to reduce calculations
@@ -21,10 +21,10 @@ class Sphere : public hittable {
         auto sqrt_d = std::sqrt(discriminant);
 
         // If the ray *does* hit, find the closest root within the accepted range
-        auto root = (h - sqrt_d) / a;               // Find the negative root, will be the furthest
-        if (root <= ray_tmin || root >= ray_tmax) { // Check acceptable range
-            root = (h + sqrt_d) / a;                // Find the positive root, check if it's valid and use it if so
-            if (root <= ray_tmin || ray_tmax <= root)
+        auto root = (h - sqrt_d) / a; // Find the negative root, will be the furthest
+        if (!ray_t.surrounds(root)) { // Check acceptable range
+            root = (h + sqrt_d) / a;  // Find the positive root, check if it's valid and use it if so
+            if (!ray_t.surrounds(root))
                 return false;
         }
 
