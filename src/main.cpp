@@ -1,43 +1,33 @@
 #include <iostream>
 
-#include "Ray.h"
-#include "utils/color.h"
+#include "config.hpp"
+#include "hittable/Sphere.h"
+#include "hittable/hittable.h"
+#include "hittable/hittable_list.h"
 #include "utils/vec3.h"
 
-bool hit_sphere(const point3 &center, double radius, const Ray &r) {
-    vec3 oc = center - r.origin(); // Dist from the origin of the ray to the center of the sphere
+#include <chrono>
+using namespace std::chrono; // To time execution
 
-    // These are the components from the quadratic equation at^2 + bt + c = 0
-    // when solving for t
-    auto a = dot(r.direction(), r.direction());
-    auto b = -2.0 * dot(r.direction(), oc);
-    auto c = dot(oc, oc) - radius * radius;
-    // the discriminant is the content of the sqrt: b^2 - 4ac
-    auto discriminant = b * b - 4 * a * c;
-
-    // We know that there has been an intersection with a sphere when the disciminant is grater or eq to 0:
-    //      discriminant == 0: ony 1 root, only 1 hit, tangent to the sphere.
-    //      discrimanant > 0: 2 roots, 2 hits: one when entering the sphere and the other when exiting.
-    return (discriminant >= 0);
-}
-
-color ray_color(const Ray &r) {
-
-    if (hit_sphere(point3(0.0, 0.0, -1.0), 0.5, r)) {
-        return color(1.0, 0.7, 0.0); // If there is a hit, return yellow
+color ray_color(const Ray &r, const Hittable_list &world) {
+    // The following values are those of an arbitrary sphere
+    hit_record temp_rec;
+    hit_record rec;
+    if (world.hit(r, 0, infinity, rec)) {
+        return 0.5 * (rec.normal + color(1, 1, 1));
     }
 
-    vec3 unit_direction = unit_vector(r.direction()); // scaled to unit length, so -1:1
-    auto a = 0.5 * (unit_direction.y() + 1.0);        // Scales from -1:1 to 0:1
-    // Lerp btween blue and white: blendValue = (1-a) * startValue + a * endValue
-    return (1 - a) * color(1.0, 1.0, 1.0) + a * color(0.5, 0.7, 1.0); // white and light blue
+    vec3 unit_direction = unit_vector(r.direction());
+    // lerp bg
+    auto a = 0.5 * (unit_direction.y() + 1.0);
+    return (1.0 - a) * color(1.0, 1.0, 1.0) + a * color(0.5, 0.7, 1.0);
 }
 
 int main() {
 
     /// Image settings
-    double aspect_ratio = 16.0 / 9.0; // 16:9, used to find height
-    int image_width = 400;
+    double aspect_ratio = conf::ASPECT_RATIO; // 16:9, used to find height
+    int image_width = conf::W_WIDTH;
     int image_height = (image_width / aspect_ratio);      // Finding height
     image_height = (image_height < 1) ? 1 : image_height; // If less than 1, make it 1
 
@@ -73,9 +63,16 @@ int main() {
     auto viewport_upper_left = camera_center - vec3(0, 0, focal_length) - viewport_u / 2 - viewport_v / 2;
     auto pixel00_loc = viewport_upper_left + 0.5 * (pixel_delta_u + pixel_delta_v);
 
+    /// World settings
+    Hittable_list world;                                            // Stores a list of objects present that can be hit
+    world.add(make_shared<Sphere>(point3(0.0, 0.0, -1.0), 0.5));    // Lil sphere
+    world.add(make_shared<Sphere>(point3(0.0, -100.5, -1.0), 100)); // Massive sphere to emulate a ground
+
     /// Render
     // Write loading info to the clog stream (the standard output stream is where the image gets printed)
     std::cout << "P3\n" << image_width << " " << image_height << "\n255\n";
+
+    auto start = high_resolution_clock::now();
 
     for (int j = 0; j < image_height; j++) {
         std::clog << "\rScanlines remaining: " << (image_height - j) << ' ' << std::flush;
@@ -90,13 +87,17 @@ int main() {
             color pixel_color = color(double(i) / (image_width - 1), double(j) / (image_height - 1), 0.0);*/
 
             // Generate the pixel calculating the colour of the object hit by the ray
-            color pixel_color = ray_color(r);
+            color pixel_color = ray_color(r, world);
 
             // Write the colour to stdout
             write_color(std::cout, pixel_color);
         }
     }
-    std::clog << "\rDone!                        \n";
+
+    auto stop = high_resolution_clock::now();
+    auto duration = duration_cast<microseconds>(stop - start);
+
+    std::clog << "\rDone in " << duration.count() / 1000.0 << " ms                        \n";
 
     // '\r' replaces characters
 
