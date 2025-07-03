@@ -2,6 +2,8 @@
 #define INTERVAL_H
 
 #include "../config.hpp"
+// #include "color.h"
+// #include "vec3.h"
 
 class Interval {
   public:
@@ -16,6 +18,13 @@ class Interval {
     double size() const { return max - min; }
     bool contains(double x) const { return min <= x && x <= max; } // [min, max]
     bool surrounds(double x) const { return min < x && x < max; }  // (min, max)
+    double clamp(double x) const {
+        if (x < min)
+            return min;
+        if (x > max)
+            return max;
+        return x;
+    }
 
     static const Interval empty;    // Interval with no values in btween
     static const Interval universe; // Intervall with ALL possible values in btween

@@ -9,6 +9,7 @@ class Camera {
   public:
     double aspect_ratio = 1.0;
     int image_width = 100;
+    int samples_per_pixel = 10; // N of averaged samples
 
     void render(const hittable &world) {
         initialize();
@@ -23,29 +24,26 @@ class Camera {
 
             for (int i = 0; i < image_width; i++) {
 
-                // Pretty self explanatory
-                auto pixel_center = _pixel00_loc + (i * _pixel_delta_u) + (j * _pixel_delta_v);
-                auto ray_direction = pixel_center - _center;
-                Ray r(_center, ray_direction); // (origin, dir)
-
-                /*// Generate the pixel based on coordinates of the image
-                color pixel_color = color(double(i) / (image_width - 1), double(j) / (image_height - 1), 0.0);*/
-
-                // Generate the pixel calculating the colour of the object hit by the ray
-                color pixel_color = ray_color(r, world);
+                // Generate the pixel adding up the colour received in each sample
+                color pixel_color(0.0, 0.0, 0.0);
+                for (int sample = 0; sample < samples_per_pixel; sample++) {
+                    Ray r = get_ray(i, j);
+                    pixel_color += ray_color(r, world);
+                }
 
                 // Write the colour to stdout
-                write_color(std::cout, pixel_color);
+                write_color(std::cout, _pixel_samples_scale * pixel_color);
             }
         }
     }
 
   private:
-    int _image_height;   // Rendered image height (calculated from aspect ratio and width)
-    point3 _center;      // Camera center
-    point3 _pixel00_loc; // Location of px 0,0
-    vec3 _pixel_delta_u; // Espai fins al seg píxel a la dreta
-    vec3 _pixel_delta_v; // Espai fins al següent píxel a sota
+    int _image_height;           // Rendered image height (calculated from aspect ratio and width)
+    double _pixel_samples_scale; // Color scale factor for a sum of pixel samples
+    point3 _center;              // Camera center
+    point3 _pixel00_loc;         // Location of px 0,0
+    vec3 _pixel_delta_u;         // Espai fins al seg píxel a la dreta
+    vec3 _pixel_delta_v;         // Espai fins al següent píxel a sota
 
     void initialize() {
         // Function to initialize all variables (hard-coded)
@@ -57,6 +55,8 @@ class Camera {
         // // Distance from the camera to the viewport will be 1 (focal length)
         _image_height = int(image_width / aspect_ratio);
         _image_height = (_image_height < 1) ? 1 : _image_height;
+
+        _pixel_samples_scale = 1.0 / samples_per_pixel;
 
         // Camera fixed at 0,0,0
         // // +x --> right
@@ -86,12 +86,28 @@ class Camera {
         _pixel00_loc = viewport_upper_left + 0.5 * (_pixel_delta_u + _pixel_delta_v);
     }
 
+    Ray get_ray(int i, int j) const {
+        // Construct a camera ray from the origin (camera position) and directed at
+        // the randomly sampled point around i, j (the random offset to cast multiple rays per screen pixel).
+        auto offset = sample_square();
+        auto pixel_sample = _pixel00_loc + ((i + offset.x()) * _pixel_delta_u) + ((j + offset.y()) * _pixel_delta_v);
+
+        auto ray_direction = pixel_sample - _center;
+        return Ray(_center, ray_direction);
+    }
+
+    vec3 sample_square() const {
+        // Returns the vector to a random pount in the [+-0.5, +-0.5] square around the pixel
+        return vec3(random_double() - 0.5, random_double() - 0.5, 0.0);
+    }
+
     color ray_color(const Ray &r, const hittable &world) const {
         // Info of the hit
         hit_record rec;
 
         // If there is a hit from the ray btween 0 and inf, colour the object with the normal
         if (world.hit(r, Interval(0, infinity), rec)) {
+
             return 0.5 * (rec.normal + color(1, 1, 1));
         }
 

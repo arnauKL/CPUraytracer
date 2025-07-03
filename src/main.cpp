@@ -19,6 +19,7 @@ int main() {
     Camera cam;
     cam.aspect_ratio = conf::ASPECT_RATIO;
     cam.image_width = conf::W_WIDTH;
+    cam.samples_per_pixel = 100;
 
     // Render (and time)
     auto start = high_resolution_clock::now();
